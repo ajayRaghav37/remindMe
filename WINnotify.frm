@@ -1,7 +1,5 @@
 VERSION 5.00
-Object = "{6BF52A50-394A-11D3-B153-00C04F79FAA6}#1.0#0"; "wmp.dll"
 Begin VB.Form WINnotify 
-   Appearance      =   0  'Flat
    BackColor       =   &H001778A9&
    BorderStyle     =   0  'None
    Caption         =   "remindME Notification"
@@ -19,49 +17,16 @@ Begin VB.Form WINnotify
       Left            =   4800
       Top             =   2040
    End
-   Begin WMPLibCtl.WindowsMediaPlayer TonePlayer 
-      Height          =   375
-      Left            =   480
-      TabIndex        =   8
-      Top             =   720
-      Visible         =   0   'False
-      Width           =   3375
-      URL             =   ""
-      rate            =   1
-      balance         =   0
-      currentPosition =   0
-      defaultFrame    =   ""
-      playCount       =   1
-      autoStart       =   -1  'True
-      currentMarker   =   0
-      invokeURLs      =   -1  'True
-      baseURL         =   ""
-      volume          =   50
-      mute            =   0   'False
-      uiMode          =   "full"
-      stretchToFit    =   0   'False
-      windowlessVideo =   0   'False
-      enabled         =   -1  'True
-      enableContextMenu=   -1  'True
-      fullScreen      =   0   'False
-      SAMIStyle       =   ""
-      SAMILang        =   ""
-      SAMIFilename    =   ""
-      captioningID    =   ""
-      enableErrorDialogs=   0   'False
-      _cx             =   5953
-      _cy             =   661
-   End
    Begin VB.Label lblPostpone 
       Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H001778A9&
       BorderStyle     =   1  'Fixed Single
-      Caption         =   "a"
+      Caption         =   "#"
       BeginProperty Font 
-         Name            =   "Webdings"
-         Size            =   14.25
-         Charset         =   2
+         Name            =   "Segoe UI"
+         Size            =   12
+         Charset         =   0
          Weight          =   700
          Underline       =   0   'False
          Italic          =   0   'False
@@ -73,7 +38,6 @@ Begin VB.Form WINnotify
       Left            =   4605
       TabIndex        =   7
       Top             =   2400
-      UseMnemonic     =   0   'False
       Width           =   810
    End
    Begin VB.Label lblPostpone 
@@ -97,7 +61,6 @@ Begin VB.Form WINnotify
       Left            =   3705
       TabIndex        =   6
       Top             =   2400
-      UseMnemonic     =   0   'False
       Width           =   810
    End
    Begin VB.Label lblPostpone 
@@ -121,7 +84,6 @@ Begin VB.Form WINnotify
       Left            =   2805
       TabIndex        =   5
       Top             =   2400
-      UseMnemonic     =   0   'False
       Width           =   810
    End
    Begin VB.Label lblPostpone 
@@ -145,7 +107,6 @@ Begin VB.Form WINnotify
       Left            =   1905
       TabIndex        =   4
       Top             =   2400
-      UseMnemonic     =   0   'False
       Width           =   810
    End
    Begin VB.Label lblPostpone 
@@ -169,7 +130,6 @@ Begin VB.Form WINnotify
       Left            =   1005
       TabIndex        =   3
       Top             =   2400
-      UseMnemonic     =   0   'False
       Width           =   810
    End
    Begin VB.Label lblPostpone 
@@ -193,7 +153,6 @@ Begin VB.Form WINnotify
       Left            =   105
       TabIndex        =   2
       Top             =   2400
-      UseMnemonic     =   0   'False
       Width           =   810
    End
    Begin VB.Label lblContent 
@@ -213,7 +172,6 @@ Begin VB.Form WINnotify
       Left            =   240
       TabIndex        =   1
       Top             =   720
-      UseMnemonic     =   0   'False
       Width           =   5010
       WordWrap        =   -1  'True
    End
@@ -234,7 +192,6 @@ Begin VB.Form WINnotify
       Left            =   240
       TabIndex        =   0
       Top             =   240
-      UseMnemonic     =   0   'False
       Width           =   4980
       WordWrap        =   -1  'True
    End
@@ -245,9 +202,12 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Const OneHr As Double = 4.16666666666667E-02
+Const FifteenMin As Double = 1.04166666666667E-02
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Dim pretimer As Double
 Dim temp As Integer
-Private Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
+
 Private Sub Form_Click()
     On Error Resume Next
     If Tag <> "" Then
@@ -258,20 +218,6 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Dim res As Long                                            'Adding tone
-    Dim DataArray() As Byte
-    Dim TempPath As String
-    Dim FileNum As Integer
-    DataArray = LoadResData(101, "CUSTOM")
-    FileNum = FreeFile
-    TempPath = String$(260, Chr$(0))
-    GetTempPath 260, TempPath
-    TempPath = Replace(TempPath, Chr$(0), "")
-    TempPath = TempPath + "Tone.mp3"
-    TonePlayer.URL = TempPath
-    TonePlayer.mediaCollection.Add TempPath
-    TonePlayer.Controls.Play
-    WINnotifyLoaded = True
     SetWindowPos hWnd, -1, 0, 0, 0, 0, 1 Or 2
     Left = Screen.Width - Width - 240
     Top = Screen.Height - Height
@@ -279,42 +225,46 @@ End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
-    lblPostpone(0).BackColor = cButton_Normal
-    lblPostpone(0).ForeColor = vbGray
-    lblPostpone(1).BackColor = cButton_Normal
-    lblPostpone(1).ForeColor = vbGray
-    lblPostpone(2).BackColor = cButton_Normal
-    lblPostpone(2).ForeColor = vbGray
-    lblPostpone(3).BackColor = cButton_Normal
-    lblPostpone(3).ForeColor = vbGray
-    lblPostpone(4).BackColor = cButton_Normal
-    lblPostpone(4).ForeColor = vbGray
-    lblPostpone(5).BackColor = cButton_Normal
-    lblPostpone(5).ForeColor = vbGray
-End Sub
-
-Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-    WINnotifyLoaded = False
-End Sub
-
-Private Sub Form_Unload(Cancel As Integer)
-    WINnotifyLoaded = False
+    For temp = 0 To 5
+        lblPostpone(temp).BackColor = &H1778A9
+        lblPostpone(temp).ForeColor = &H404040
+    Next
 End Sub
 
 Private Sub lblContent_Click()
     On Error Resume Next
-    Form_Click
+    Call Form_Click
 End Sub
 
 Private Sub lblContent_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
-    Form_MouseMove 0, 0, 0, 0
+    Call Form_MouseMove(0, 0, 0, 0)
 End Sub
 
 Private Sub lblPostpone_Click(Index As Integer)
     On Error Resume Next
     If Index = 5 Then
-        WINremindME.MarkDone 0, Val(Tag)
+        SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Subject", GetSetting("Upcoming", Tag, "Subject", "")
+        SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Content", GetSetting("Upcoming", Tag, "Content", "")
+        SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Time", GetSetting("Upcoming", Tag, "Time", "")
+        SaveSetting "Archived", "Total", "Number", Trim(Str(Val(GetSetting("Archived", "Total", "Number", "0")) + 1))
+        DeleteSetting "Upcoming", Tag
+        Dim WorksLoaded As Integer
+        WorksLoaded = Val(GetSetting("Upcoming", "Total", "Number", "0"))
+        If WorksLoaded > 1 Then
+            For temp = Val(Tag) To WorksLoaded - 2
+                SaveSetting "Upcoming", Trim(Str(temp)), "Subject", GetSetting("Upcoming", Trim(Str(temp + 1)), "Subject", "")
+                SaveSetting "Upcoming", Trim(Str(temp)), "Time", GetSetting("Upcoming", Trim(Str(temp + 1)), "Time", "")
+                SaveSetting "Upcoming", Trim(Str(temp)), "Content", GetSetting("Upcoming", Trim(Str(temp + 1)), "Content", "")
+            Next
+        End If
+        SaveSetting "Upcoming", GetSetting("Upcoming", "Total", "Number", "0"), "Temp", ""
+        DeleteSetting "Upcoming", GetSetting("Upcoming", "Total", "Number", "0")
+        SaveSetting "Upcoming", "Total", "Number", Trim(Str(Val(GetSetting("Upcoming", "Total", "Number", "0")) - 1))
+        If WINremindME.TabSelected = 0 Then
+            WINremindME.Clear_All
+            WINremindME.Load_All ("Upcoming")
+        End If
     Else
         Dim drtn As Double
         Select Case Index
@@ -329,23 +279,9 @@ Private Sub lblPostpone_Click(Index As Integer)
             Case 4
                 drtn = 1
         End Select
-        Dim TempSubject As String
-        Dim TempContent As String
-        Dim TempTime As String
-        Dim TempoTime As String
-        Dim TempFreq As String
-        Dim TempExpiry As String
-        TempSubject = GetSetting("Upcoming", Tag, "Subject", "")
-        TempContent = GetSetting("Upcoming", Tag, "Content", "")
-        TempoTime = GetSetting("Upcoming", Tag, "oTime", "")
-        TempTime = Str(Now + drtn)
-        TempFreq = GetSetting("Upcoming", Tag, "Freq", "o")
-        TempExpiry = GetSetting("Upcoming", Tag, "Expiry", Str(#12/31/2099#))
-        WINremindME.Delete_Work 0, Val(Tag)
-        WINremindME.AddTask TempSubject, TempContent, TempTime, TempFreq, TempExpiry, IIf(TempFreq = "o", TempTime, TempoTime)
-        If TabSelected = 0 Then
-            WINremindME.Clear_All
-            WINremindME.Load_All "Upcoming"
+        SaveSetting "Upcoming", Tag, "Time", Str(Now + drtn)
+        If WINremindME.TabSelected = 0 Then
+            WINremindME.Load_All ("Upcoming")
         End If
     End If
     Unload Me
@@ -353,18 +289,18 @@ End Sub
 
 Private Sub lblPostpone_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
-    lblPostpone(Index).BackColor = cButton_Hover
+    lblPostpone(Index).BackColor = RGB(225, 165, 38)
     lblPostpone(Index).ForeColor = vbBlack
 End Sub
 
 Private Sub lblSubject_Click()
     On Error Resume Next
-    Form_Click
+    Call Form_Click
 End Sub
 
 Private Sub lblSubject_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
-    Form_MouseMove 0, 0, 0, 0
+    Call Form_MouseMove(0, 0, 0, 0)
 End Sub
 
 Private Sub ShowTimer_Timer()
