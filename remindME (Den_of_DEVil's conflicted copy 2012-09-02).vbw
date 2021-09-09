@@ -3,5 +3,5 @@ WINtask = 0, 0, 0, 0, C, 0, 0, 0, 0, C
 WINnotify = 0, 0, 0, 0, C, 0, 0, 0, 0, C
 Initializer = 0, 0, 0, 0, C
 WINabout = 0, 0, 0, 0, C, 0, 0, 0, 0, C
-WINfeedback = 0, 0, 0, 0, C, 26, 26, 829, 453, C
+WINfeedback = 52, 52, 855, 479, , 26, 26, 829, 453, C
 WINupdate = 52, 52, 922, 479, , 0, 0, 0, 0, C

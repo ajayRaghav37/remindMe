@@ -1,5 +1,4 @@
 VERSION 5.00
-Object = "{6BF52A50-394A-11D3-B153-00C04F79FAA6}#1.0#0"; "wmp.dll"
 Begin VB.Form WINnotify 
    Appearance      =   0  'Flat
    BackColor       =   &H001778A9&
@@ -9,6 +8,7 @@ Begin VB.Form WINnotify
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   5505
+   ForeColor       =   &H001778A9&
    LinkTopic       =   "Form1"
    ScaleHeight     =   2865
    ScaleWidth      =   5505
@@ -18,39 +18,6 @@ Begin VB.Form WINnotify
       Interval        =   1
       Left            =   4800
       Top             =   2040
-   End
-   Begin WMPLibCtl.WindowsMediaPlayer TonePlayer 
-      Height          =   375
-      Left            =   480
-      TabIndex        =   8
-      Top             =   720
-      Visible         =   0   'False
-      Width           =   3375
-      URL             =   ""
-      rate            =   1
-      balance         =   0
-      currentPosition =   0
-      defaultFrame    =   ""
-      playCount       =   1
-      autoStart       =   -1  'True
-      currentMarker   =   0
-      invokeURLs      =   -1  'True
-      baseURL         =   ""
-      volume          =   50
-      mute            =   0   'False
-      uiMode          =   "full"
-      stretchToFit    =   0   'False
-      windowlessVideo =   0   'False
-      enabled         =   -1  'True
-      enableContextMenu=   -1  'True
-      fullScreen      =   0   'False
-      SAMIStyle       =   ""
-      SAMILang        =   ""
-      SAMIFilename    =   ""
-      captioningID    =   ""
-      enableErrorDialogs=   0   'False
-      _cx             =   5953
-      _cy             =   661
    End
    Begin VB.Label lblPostpone 
       Alignment       =   2  'Center
@@ -247,30 +214,17 @@ Attribute VB_Exposed = False
 Option Explicit
 Dim pretimer As Double
 Dim temp As Integer
-Private Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
+
 Private Sub Form_Click()
     On Error Resume Next
     If Tag <> "" Then
-        SaveSetting "Upcoming", Tag, "Clicked", "1"
+        SaveSetting "Upcoming", Tag, "Acknowledged", "1"
     End If
     Unload Me
 End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Dim res As Long                                            'Adding tone
-    Dim DataArray() As Byte
-    Dim TempPath As String
-    Dim FileNum As Integer
-    DataArray = LoadResData(101, "CUSTOM")
-    FileNum = FreeFile
-    TempPath = String$(260, Chr$(0))
-    GetTempPath 260, TempPath
-    TempPath = Replace(TempPath, Chr$(0), "")
-    TempPath = TempPath + "Tone.mp3"
-    TonePlayer.URL = TempPath
-    TonePlayer.mediaCollection.Add TempPath
-    TonePlayer.Controls.Play
     WINnotifyLoaded = True
     SetWindowPos hWnd, -1, 0, 0, 0, 0, 1 Or 2
     Left = Screen.Width - Width - 240

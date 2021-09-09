@@ -8,6 +8,7 @@ Begin VB.Form WINabout
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4680
+   ForeColor       =   &H0026A5E1&
    LinkTopic       =   "Form1"
    ScaleHeight     =   2655
    ScaleWidth      =   4680
@@ -182,7 +183,7 @@ Begin VB.Form WINabout
       Width           =   4680
    End
    Begin VB.Shape shpBoundary 
-      BorderColor     =   &H00404040&
+      BorderColor     =   &H80000006&
       Height          =   2655
       Left            =   0
       Top             =   0
@@ -203,12 +204,12 @@ End Sub
 
 Private Sub cmdLicense_Click()
     On Error Resume Next
-    ShellExecute 0, "open", Chr(34) + "http://www.gnu.org/licenses/gpl.html" + Chr(34), 0, 0, 1
+    ShellExecute 0, "open", Chr$(34) + "http://www.gnu.org/licenses/gpl.html" + Chr$(34), 0, 0, 1
 End Sub
 
 Private Sub cmdSource_Click()
     On Error Resume Next
-    ShellExecute 0, "open", Chr(34) + "http://dl.dropbox.com/u/71359423/Compressed/remindME.zip" + Chr(34), 0, 0, 1
+    ShellExecute 0, "open", Chr$(34) + "http://dl.dropbox.com/u/71359423/Compressed/remindME.zip" + Chr$(34), 0, 0, 1
 End Sub
 
 Private Sub Form_Click()

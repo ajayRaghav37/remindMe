@@ -8,6 +8,7 @@ Begin VB.Form WINremindME
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   9750
+   ForeColor       =   &H80000005&
    Icon            =   "WINremindME.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
@@ -16,11 +17,6 @@ Begin VB.Form WINremindME
    ScaleHeight     =   6540
    ScaleWidth      =   9750
    StartUpPosition =   2  'CenterScreen
-   Begin VB.Timer tmrBackUp 
-      Interval        =   10
-      Left            =   1320
-      Top             =   5520
-   End
    Begin VB.Timer Notify 
       Interval        =   1000
       Left            =   6840
@@ -193,25 +189,77 @@ Begin VB.Form WINremindME
          Width           =   135
       End
    End
-   Begin VB.Label lblBackUP 
+   Begin VB.Label lblUpdate 
       BackStyle       =   0  'Transparent
-      Caption         =   "  BackUP"
-      ForeColor       =   &H80000011&
-      Height          =   255
-      Left            =   3600
-      TabIndex        =   23
-      Top             =   6240
-      Width           =   780
+      Height          =   375
+      Left            =   1185
+      TabIndex        =   24
+      Top             =   6180
+      Width           =   2100
    End
-   Begin VB.Label lblAutoBackUp 
+   Begin VB.Line LnJunk 
+      Index           =   5
+      X1              =   1185
+      X2              =   1185
+      Y1              =   6180
+      Y2              =   6555
+   End
+   Begin VB.Label lblJunk 
+      Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
-      Caption         =   " Auto BackUP : OFF"
-      ForeColor       =   &H80000011&
-      Height          =   255
-      Left            =   2040
+      Caption         =   "Check for &Updates"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00808080&
+      Height          =   195
+      Index           =   5
+      Left            =   1185
+      TabIndex        =   25
+      Top             =   6270
+      Width           =   2100
+   End
+   Begin VB.Line LnJunk 
+      Index           =   4
+      X1              =   3285
+      X2              =   3285
+      Y1              =   6180
+      Y2              =   6555
+   End
+   Begin VB.Label lblRepair 
+      BackStyle       =   0  'Transparent
+      Height          =   375
+      Left            =   3285
       TabIndex        =   22
-      Top             =   6240
-      Width           =   1620
+      Top             =   6180
+      Width           =   1200
+   End
+   Begin VB.Label lblJunk 
+      Alignment       =   2  'Center
+      BackStyle       =   0  'Transparent
+      Caption         =   "&Repair All"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00808080&
+      Height          =   195
+      Index           =   4
+      Left            =   3285
+      TabIndex        =   23
+      Top             =   6270
+      Width           =   1200
    End
    Begin VB.Label lblHourly 
       BackStyle       =   0  'Transparent
@@ -223,7 +271,7 @@ Begin VB.Form WINremindME
       Width           =   2550
    End
    Begin VB.Label lblJunk 
-      AutoSize        =   -1  'True
+      Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
       Caption         =   "&Hourly Reminders: Disabled"
       BeginProperty Font 
@@ -238,10 +286,10 @@ Begin VB.Form WINremindME
       ForeColor       =   &H00808080&
       Height          =   195
       Index           =   3
-      Left            =   4695
+      Left            =   4485
       TabIndex        =   20
       Top             =   6270
-      Width           =   2130
+      Width           =   2550
    End
    Begin VB.Line LnJunk 
       Index           =   3
@@ -513,11 +561,8 @@ Attribute VB_Exposed = False
 Option Explicit
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 Private Const GWL_STYLE = (-16)
 Private Const WS_DLGFRAME = &H400000
-Public ShellSystem As Variant
-Public ShellOpener As Variant
 Dim Xinit As Long
 Dim Yinit As Long
 Dim Mousedwn As Boolean
@@ -534,28 +579,6 @@ Dim nEvents As Integer
 Dim nEvents2 As Integer
 Dim HeaderLen As Integer
 
-Private Sub lblBackUP_Click()
-    Dim sKey As String
-    Dim tempstr As String
-    On Error GoTo handler
-folderinput:
-    Set ShellOpener = Nothing
-    Set ShellSystem = CreateObject("Shell.Application")
-    Set ShellOpener = ShellSystem.BrowseForFolder(0, "OldName", &H1, 17)
-    If Not (ShellOpener Is Nothing) Then
-        tempstr = ShellOpener.ParentFolder.ParseName(ShellOpener.Title).Path
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\remindME" + Chr(34) + " " + Chr(34) + tempstr + "\remindMESetting.reg" + Chr(34), 0
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\Archived" + Chr(34) + " " + Chr(34) + tempstr + "\Archived.reg" + Chr(34), 0
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\Pending" + Chr(34) + " " + Chr(34) + tempstr + "\Pending.reg" + Chr(34), 0
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\Upcoming" + Chr(34) + " " + Chr(34) + tempstr + "\Upcoming.reg" + Chr(34), 0
-        MsgBox "BackUp Files Created." + "To load BackUp files first clear all entry in remindME then Load registry files from BackUp folder"
-    End If
-handler:
-    If Err = 91 Then
-        MsgBox ("Select Folder Not Drive")
-        GoTo folderinput
-    End If
-End Sub
 Private Sub BtnClose_Click()
     On Error Resume Next
     WindowState = 1
@@ -568,7 +591,7 @@ Private Sub cmdAddTask_Click()
     WINtask.Left = Left + (Width - WINtask.Width) / 2
     WINtask.Top = Top + (Height - WINtask.Height) / 2
     WINtask.Show vbModal
-    AddTask WINtask.txtSubject.Text, WINtask.txtContent.Text, WINtask.txtDeadline.Text, WINtask.cmdOK.Tag, WINtask.txtExpiry.Text
+    AddTask WINtask.txtSubject.Text, WINtask.txtContent.Text, WINtask.txtDeadline.Text, WINtask.cmdOK.Tag, WINtask.txtExpiry.Text, WINtask.txtDeadline.Text
     Unload WINtask
 End Sub
 
@@ -693,11 +716,19 @@ Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
             End If
         Case vbKeyF
             If Shift = vbAltMask Then
-                lblFeedback_Click
+                If lblFeedback.Enabled Then
+                    lblFeedback_Click
+                End If
             End If
         Case vbKeyH
             If Shift = vbAltMask Then
                 lblHourly_Click
+            End If
+        Case vbKeyU
+            If Shift = vbAltMask Then
+                If lblUpdate.Enabled Then
+                    lblUpdate_Click
+                End If
             End If
     End Select
 End Sub
@@ -707,13 +738,17 @@ Private Sub Form_Load()
     If App.PrevInstance Then
         End
     End If
+    If Val(GetSetting("remindME", "Compatibility", "Last Version", Trim(Str(App.Major)) + "." + Trim(Str(App.Minor)))) < Val(Trim(Str(App.Major)) + "." + Trim(Str(App.Minor))) Then
+        RepairAll
+    End If
+    SaveSetting "remindME", "Compatibility", "Last Version", Trim(Str(App.Major)) + "." + Trim(Str(App.Minor))
     Dim ShortcutSystem As Object
     Dim CurrentShortcut As Object
     Set ShortcutSystem = CreateObject("WScript.Shell")
     Set CurrentShortcut = ShortcutSystem.createshortcut(ShortcutSystem.SpecialFolders("Startup") + "\remindME.lnk")
     CurrentShortcut.targetpath = App.Path + "\" + App.EXEName + ".exe"
     CurrentShortcut.workingdirectory = App.Path
-    CurrentShortcut.save
+    CurrentShortcut.Save
     SetWindowLong hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) + WS_DLGFRAME
     Show
     Height = 6555
@@ -732,11 +767,11 @@ Private Sub Form_Load()
         For nEvents = Val(GetSetting("Upcoming", "Total", "Number", "0")) - 1 To 0 Step -1
             If CDate(GetSetting("Upcoming", Trim(Str(nEvents)), "Time", "")) >= Now Then
                 Exit For
-            ElseIf GetSetting("Upcoming", Trim(Str(nEvents)), "Clicked", "") = "" Then
+            ElseIf GetSetting("Upcoming", Trim(Str(nEvents)), "Acknowledged", "") = "" Then
                 Load WINnotify
-                WINnotify.lblContent.Caption = WINnotify.lblContent.Caption + GetSetting("Upcoming", Trim(Str(nEvents)), "Subject", "") + Chr(13)
+                WINnotify.lblContent.Caption = WINnotify.lblContent.Caption + GetSetting("Upcoming", Trim(Str(nEvents)), "Subject", "") + vbNewLine
                 nEvents2 = nEvents2 + 1
-                SaveSetting "Upcoming", Trim(Str(nEvents)), "Clicked", "1"
+                SaveSetting "Upcoming", Trim(Str(nEvents)), "Acknowledged", "1"
             End If
         Next
         If nEvents2 > 0 Then
@@ -746,64 +781,7 @@ Private Sub Form_Load()
             nEvents2 = 0
         End If
     End If
-    Dim tempstr As String
-    tempstr = GetSetting("remindME", "Auto BackUp", "Status", "OFF")
-    If (tempstr = "ON") Then
-        lblAutoBackUp.Caption = "Auto BackUp : ON"
-        tmrBackUp.Enabled = True
-    End If
-End Sub
-Private Sub lblAutoBackUp_Click()
-    If (GetSetting("remindME", "Auto BackUp", "Status", "OFF") = "ON") Then
-        SaveSetting "remindME", "Auto BackUp", "Status", "OFF"
-        lblAutoBackUp.Caption = "Auto BackUp : OFF"
-        tmrBackUp.Enabled = False
-    Else
-        SaveSetting "remindME", "Auto BackUp", "Status", "ON"
-        lblAutoBackUp.Caption = "Auto BackUp : ON"
-        Dim tempstr As String
-        tempstr = GetSetting("remindME", "Auto BackUp", "Main Folder", "")
-        
-        On Error GoTo handler
-folderinput:
-        Set ShellOpener = Nothing
-        Set ShellSystem = CreateObject("Shell.Application")
-        Set ShellOpener = ShellSystem.BrowseForFolder(0, "OldName", &H1, 17)
-        If Not (ShellOpener Is Nothing) Then
-            tempstr = ShellOpener.ParentFolder.ParseName(ShellOpener.Title).Path
-            SaveSetting "remindME", "Auto BackUp", "Main Folder", tempstr
-        tmrBackUp.Enabled = True
-        End If
-handler:
-        If Err = 91 Then
-            MsgBox ("Select Folder Not Drive")
-            GoTo folderinput
-        End If
-        
-    End If
-End Sub
-Private Sub tmrBackUp_Timer()
-    Dim tempstr As String
-    tempstr = GetSetting("remindME", "Auto BackUP", "Last BackUP", "")
-    If tempstr = "" Then
-        tempstr = Format(Now, "dd-mmmm-yyyy")
-        BackUp (tempstr)
-    ElseIf tempstr <> Format(Now, "dd-mmmm-yyyy") Then
-        tempstr = Format(Now, "dd-mmmm-yyyy")
-        BackUp (tempstr)
-    End If
-End Sub
-Private Sub BackUp(BackUpDate As String)
-    If Dir(GetSetting("remindME", "Auto BackUp", "Main Folder", "") + "\" + BackUpDate) = "" Then
-        MkDir (GetSetting("remindME", "Auto BackUp", "Main Folder", "") + "\" + BackUpDate)
-        Dim tempstr As String
-        tempstr = GetSetting("remindME", "Auto BackUp", "Main Folder", "") + "\" + BackUpDate
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\remindME" + Chr(34) + " " + Chr(34) + tempstr + "\remindMESetting.reg" + Chr(34), 0
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\Archived" + Chr(34) + " " + Chr(34) + tempstr + "\Archived.reg" + Chr(34), 0
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\Pending" + Chr(34) + " " + Chr(34) + tempstr + "\Pending.reg" + Chr(34), 0
-        Shell "REG EXPORT " + Chr(34) + " HKEY_CURRENT_USER\Software\VB and VBA Program Settings\Upcoming" + Chr(34) + " " + Chr(34) + tempstr + "\Upcoming.reg" + Chr(34), 0
-        SaveSetting "remindME", "Auto BackUP", "Last BackUP", BackUpDate
-    End If
+    
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -914,7 +892,7 @@ End Sub
 
 Private Sub lblFeedback_Click()
     On Error Resume Next
-    ShellExecute 0, "open", Chr(34) + "http://anico.in/apps/forums/topics/show/7589381-feedback" + Chr(34), 0, 0, 1
+    WINfeedback.Show
 End Sub
 
 Private Sub lblHourly_Click()
@@ -923,9 +901,21 @@ Private Sub lblHourly_Click()
         SaveSetting "remindME", "Notify", "Latest Check", DateAdd("yyyy", -1, Now)
         lblJunk(3).Caption = "&Hourly Reminders: Enabled"
     Else
-        DeleteSetting "remindME"
+        DeleteSetting "remindME", "Notify"
         lblJunk(3).Caption = "&Hourly Reminders: Disabled"
     End If
+End Sub
+
+Private Sub lblRepair_Click()
+    On Error Resume Next
+    lblJunk(4).Caption = "Repairing..."
+    lblRepair.Enabled = False
+    DoEvents
+    RepairAll
+    Clear_All
+    Load_All TabStr(TabSelected)
+    lblJunk(4).Caption = "&Repair All"
+    lblRepair.Enabled = True
 End Sub
 
 Private Sub lblSubject_DblClick(Index As Integer)
@@ -942,39 +932,24 @@ Public Sub Delete_Work(TabSel As Byte, WorkSel As Integer)
     On Error Resume Next
     Dim TempNum As Integer
     Dim WorkLoad As Integer
-    Dim TempNumStr As String
-    Select Case TabSel
-        Case 0
-            TempNumStr = "Upcoming"
-        Case 1
-            TempNumStr = "Archived"
-        Case 2
-            TempNumStr = "Pending"
-    End Select
     TempNum = WorkSel
-    WorkLoad = Val(GetSetting(TempNumStr, "Total", "Number", "0"))
+    WorkLoad = Val(GetSetting(TabStr(TabSel), "Total", "Number", "0"))
     If WorkLoad < 1 Then
         Exit Sub
     End If
-    DeleteSetting TempNumStr, Trim(Str(WorkSel))
+    DeleteSetting TabStr(TabSel), Trim(Str(WorkSel))
     If WorkLoad > 1 Then
         For TempNum = WorkSel To WorkLoad - 2
-            SaveSetting TempNumStr, Trim(Str(TempNum)), "Subject", GetSetting(TempNumStr, Trim(Str(TempNum + 1)), "Subject", "")
+            MoveTask TabSel, TempNum + 1, TempNum
             lblSubject(TempNum).Caption = lblSubject(TempNum + 1).Caption
-            SaveSetting TempNumStr, Trim(Str(TempNum)), "Content", GetSetting(TempNumStr, Trim(Str(TempNum + 1)), "Content", "")
             If TabSel <> 2 Then
-                SaveSetting TempNumStr, Trim(Str(TempNum)), "Time", GetSetting(TempNumStr, Trim(Str(TempNum + 1)), "Time", "")
                 lblTime(TempNum).Caption = lblTime(TempNum + 1).Caption
-                SaveSetting TempNumStr, Trim(Str(TempNum)), "oTime", GetSetting(TempNumStr, Trim(Str(TempNum + 1)), "oTime", "")
-                SaveSetting TempNumStr, Trim(Str(TempNum)), "Freq", GetSetting(TempNumStr, Trim(Str(TempNum + 1)), "Freq", "o")
-                SaveSetting TempNumStr, Trim(Str(TempNum)), "Expiry", GetSetting(TempNumStr, Trim(Str(TempNum + 1)), "Expiry", Str(#12/31/2099#))
-                SaveSetting TempNumStr, Trim(Str(TempNum)), "Clicked", GetSetting(TempNumStr, Trim(Str(TempNum + 1)), "Clicked", "")
             End If
         Next
     End If
-    SaveSetting TempNumStr, GetSetting(TempNumStr, "Total", "Number", "0"), "TempNum", ""
-    DeleteSetting TempNumStr, GetSetting(TempNumStr, "Total", "Number", "0")
-    SaveSetting TempNumStr, "Total", "Number", Trim(Str(Val(GetSetting(TempNumStr, "Total", "Number", "0")) - 1))
+    SaveSetting TabStr(TabSel), GetSetting(TabStr(TabSel), "Total", "Number", "0"), "TempNum", ""
+    DeleteSetting TabStr(TabSel), GetSetting(TabStr(TabSel), "Total", "Number", "0")
+    SaveSetting TabStr(TabSel), "Total", "Number", Trim(Str(Val(GetSetting(TabStr(TabSel), "Total", "Number", "0")) - 1))
     If TabSel = TabSelected Then
         CalledExt = True
         If WorkSel = ContentNo Then
@@ -985,7 +960,7 @@ Public Sub Delete_Work(TabSel As Byte, WorkSel As Integer)
             WorkSelected = WorkSelected - 1
         End If
         Clear_All
-        Load_All TempNumStr
+        Load_All TabStr(TabSel)
         CalledExt = False
         AdjustWork
     End If
@@ -996,17 +971,10 @@ Public Sub MarkDone(TabSel As Byte, WorkSel As Integer)
     Dim TempNum As Integer
     If TabSel <> 1 Then
         If TabSel = 2 Then
-            SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Subject", GetSetting("Pending", Trim(Str(WorkSel)), "Subject", "")
-            SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Content", GetSetting("Pending", Trim(Str(WorkSel)), "Content", "")
+            MoveTask 2, WorkSel, Val(GetSetting("Archived", "Total", "Number", "0")), 1
         Else
             If GetSetting("Upcoming", Trim(Str(WorkSel)), "Freq", "o") = "o" Or CDate(GetSetting("Upcoming", Trim(Str(WorkSel)), "Expiry", Str(#12/31/2099#))) < DateAdd(GetSetting("Upcoming", Trim(Str(WorkSel)), "Freq", "d"), 1, CDate(GetSetting("Upcoming", Trim(Str(WorkSel)), "Time", DateValue(Now)))) Then
-                SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Subject", GetSetting("Upcoming", Trim(Str(WorkSel)), "Subject", "")
-                SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Content", GetSetting("Upcoming", Trim(Str(WorkSel)), "Content", "")
-                SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Time", GetSetting("Upcoming", Trim(Str(WorkSel)), "Time", "")
-                SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "oTime", GetSetting("Upcoming", Trim(Str(WorkSel)), "Time", "")
-                SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Freq", GetSetting("Upcoming", Trim(Str(WorkSel)), "Freq", "o")
-                SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Expiry", GetSetting("Upcoming", Trim(Str(WorkSel)), "Expiry", Str(#12/31/2099#))
-                SaveSetting "Archived", GetSetting("Archived", "Total", "Number", "0"), "Clicked", GetSetting("Upcoming", Trim(Str(WorkSel)), "Clicked", "")
+                MoveTask 0, WorkSel, Val(GetSetting("Archived", "Total", "Number", "0")), 1
             Else
                 Dim TempSubject As String
                 Dim TempContent As String
@@ -1015,7 +983,7 @@ Public Sub MarkDone(TabSel As Byte, WorkSel As Integer)
                 Dim TempExpiry As String
                 TempSubject = GetSetting("Upcoming", Trim(Str(WorkSel)), "Subject", "")
                 TempContent = GetSetting("Upcoming", Trim(Str(WorkSel)), "Content", "")
-                TempTime = Str(DateAdd(GetSetting("Upcoming", Trim(Str(WorkSel)), "Freq"), 1, GetSetting("Upcoming", Trim(Str(WorkSel)), "oTime")))
+                TempTime = Str(DateAdd(GetSetting("Upcoming", Trim(Str(WorkSel)), "Freq"), 1, CDate(GetSetting("Upcoming", Trim(Str(WorkSel)), "oTime", GetSetting("Upcoming", Trim(Str(WorkSel)), "Time")))))
                 TempFreq = GetSetting("Upcoming", Trim(Str(WorkSel)), "Freq", "o")
                 TempExpiry = GetSetting("Upcoming", Trim(Str(WorkSel)), "Expiry", Str(#12/31/2099#))
                 Delete_Work TabSel, WorkSel
@@ -1248,6 +1216,11 @@ Private Sub lblUpcoming_Click()
     sTab(2).Left = 7110
     TabSelected = 0
 End Sub
+
+Private Sub lblUpdate_Click()
+    '
+End Sub
+
 Private Sub lblWork_Click(Index As Integer)
     On Error Resume Next
     If Index = WorkSelected Then
@@ -1425,15 +1398,8 @@ Public Sub AddTask(s_Subject As String, s_Content As String, Optional s_Date As 
     If s_Subject = "" Then
         Exit Sub
     End If
-    If s_Expiry = "" Then
-        s_Expiry = Str(#12/31/2099#)
-    End If
-    If s_oTime = "" Then
-        s_oTime = s_Date
-    End If
     If s_Date = "" Then                     'The case for pending tasks
-        SaveSetting "Pending", GetSetting("Pending", "Total", "Number", "0"), "Subject", s_Subject
-        SaveSetting "Pending", GetSetting("Pending", "Total", "Number", "0"), "Content", s_Content
+        SaveTask 2, Val(GetSetting("Pending", "Total", "Number", "0")), s_Subject, s_Content
         SaveSetting "Pending", "Total", "Number", Trim(Str(Val(GetSetting("Pending", "Total", "Number", "0")) + 1))
         WorkSelected = Val(GetSetting("Pending", "Total", "Number", "0")) - 1
         Clear_All
@@ -1448,22 +1414,10 @@ Public Sub AddTask(s_Subject As String, s_Content As String, Optional s_Date As 
                 End If
             Next
             For TempNum3 = Val(GetSetting("Upcoming", "Total", "Number", "0")) - 1 To TempNum2 Step -1
-                SaveSetting "Upcoming", Trim(Str(TempNum3 + 1)), "Subject", GetSetting("Upcoming", Trim(Str(TempNum3)), "Subject", "")
-                SaveSetting "Upcoming", Trim(Str(TempNum3 + 1)), "Content", GetSetting("Upcoming", Trim(Str(TempNum3)), "Content", "")
-                SaveSetting "Upcoming", Trim(Str(TempNum3 + 1)), "Time", GetSetting("Upcoming", Trim(Str(TempNum3)), "Time", "")
-                SaveSetting "Upcoming", Trim(Str(TempNum3 + 1)), "oTime", GetSetting("Upcoming", Trim(Str(TempNum3)), "oTime", "")
-                SaveSetting "Upcoming", Trim(Str(TempNum3 + 1)), "Freq", GetSetting("Upcoming", Trim(Str(TempNum3)), "Freq", "o")
-                SaveSetting "Upcoming", Trim(Str(TempNum3 + 1)), "Expiry", GetSetting("Upcoming", Trim(Str(TempNum3)), "Expiry", Str(#12/31/2099#))
-                SaveSetting "Upcoming", Trim(Str(TempNum3 + 1)), "Clicked", GetSetting("Upcoming", Trim(Str(TempNum3)), "Clicked", "")
+                MoveTask 0, TempNum3, TempNum3 + 1
             Next
         End If
-        SaveSetting "Upcoming", Trim(Str(TempNum2)), "Subject", s_Subject
-        SaveSetting "Upcoming", Trim(Str(TempNum2)), "Content", s_Content
-        SaveSetting "Upcoming", Trim(Str(TempNum2)), "Time", s_Date
-        SaveSetting "Upcoming", Trim(Str(TempNum2)), "oTime", s_oTime
-        SaveSetting "Upcoming", Trim(Str(TempNum2)), "Freq", s_Freq
-        SaveSetting "Upcoming", Trim(Str(TempNum2)), "Expiry", s_Expiry
-        SaveSetting "Upcoming", Trim(Str(TempNum2)), "Clicked", ""
+        SaveTask 0, TempNum2, s_Subject, s_Content, s_Date, s_Freq, s_oTime, s_Expiry
         SaveSetting "Upcoming", "Total", "Number", Trim(Str(Val(GetSetting("Upcoming", "Total", "Number", "0")) + 1))
         Dim X As Integer
         X = TempNum2
@@ -1595,7 +1549,7 @@ Private Sub Notify_Timer()
     
     'Hourly Notifications of upcoming tasks
     
-    If Not WINnotifyLoaded Then
+    If Not WINnotifyLoaded And Not WINtaskLoaded Then
         If GetSetting("remindME", "Notify", "Latest Check", "") <> "" Then
             If Not IsDate(GetSetting("remindME", "Notify", "Latest Check", "")) Then
                 SaveSetting "remindME", "Notify", "Latest Check", DateAdd("yyyy", -1, Now)
@@ -1607,7 +1561,7 @@ Private Sub Notify_Timer()
                             Exit For
                         ElseIf CDate(GetSetting("Upcoming", Trim(Str(nEvents)), "Time", "")) > Now Then
                             Load WINnotify
-                            WINnotify.lblContent.Caption = WINnotify.lblContent.Caption + GetSetting("Upcoming", Trim(Str(nEvents)), "Subject", "") + Chr(13)
+                            WINnotify.lblContent.Caption = WINnotify.lblContent.Caption + GetSetting("Upcoming", Trim(Str(nEvents)), "Subject", "") + vbNewLine
                             nEvents2 = nEvents2 + 1
                         End If
                     Next
@@ -1625,11 +1579,12 @@ Private Sub Notify_Timer()
     
     'Notification of a specific task
     
-    If Not WINnotifyLoaded Then
+    If Not WINnotifyLoaded And Not WINtaskLoaded Then
         For nEvents = Val(GetSetting("Upcoming", "Total", "Number", "0")) - 1 To 0 Step -1
-            If CDate(GetSetting("Upcoming", Trim(Str(nEvents)), "Time", "")) < Now And GetSetting("Upcoming", Trim(Str(nEvents)), "Clicked", "") = "" Then
+            If CDate(GetSetting("Upcoming", Trim(Str(nEvents)), "Time", "")) < Now And GetSetting("Upcoming", Trim(Str(nEvents)), "Acknowledged", "") = "" Then
                 Load WINnotify
                 WINnotify.lblContent.Caption = GetSetting("Upcoming", Trim(Str(nEvents)), "Content", "")
+                WINnotify.lblContent.Caption = Replace(WINnotify.lblContent.Caption, "</R>", vbNewLine)
                 WINnotify.lblSubject.Caption = GetSetting("Upcoming", Trim(Str(nEvents)), "Subject", "")
                 WINnotify.lblContent.Top = WINnotify.lblSubject.Top + WINnotify.lblSubject.Height + 105
                 If WINnotify.lblContent.Height + WINnotify.lblContent.Top > 2175 Then
@@ -1665,7 +1620,7 @@ Private Sub LoadContent()
                     FreqStr = "year"
             End Select
             If FreqStr <> "once" Then
-                txtContent.Text = "## This task is scheduled to occur every " + FreqStr + " expiring on " + GetSetting("Upcoming", Trim(Str(ContentNo)), "Expiry", Str(#12/31/2099#)) + " ##" + vbCrLf + vbCrLf
+                txtContent.Text = "## This task is scheduled to occur every " + FreqStr + " expiring on " + GetSetting("Upcoming", Trim(Str(ContentNo)), "Expiry", Str(#12/31/2099#)) + " ##" + vbNewLine + vbNewLine
                 HeaderLen = Len(txtContent.Text)
                 txtContent.Text = txtContent.Text + GetSetting("Upcoming", Trim(Str(ContentNo)), "Content", "")
             Else
@@ -1686,11 +1641,11 @@ Private Sub LoadContent()
             End Select
             If FreqStr <> "once" Then
                 If CDate(GetSetting("Archived", Trim(Str(ContentNo)), "Expiry", Str(#12/31/2099#))) > Now Then
-                    txtContent.Text = "## This task was scheduled to occur every " + FreqStr + " expiring on " + GetSetting("Archived", Trim(Str(ContentNo)), "Expiry", Str(#12/31/2099#)) + " ##" + vbCrLf + vbCrLf
+                    txtContent.Text = "## This task was scheduled to occur every " + FreqStr + " expiring on " + GetSetting("Archived", Trim(Str(ContentNo)), "Expiry", Str(#12/31/2099#)) + " ##" + vbNewLine + vbNewLine
                     HeaderLen = Len(txtContent.Text)
                     txtContent.Text = txtContent.Text + GetSetting("Archived", Trim(Str(ContentNo)), "Content", "")
                 Else
-                    txtContent.Text = "## This task was scheduled to occur every " + FreqStr + " expired on " + GetSetting("Archived", Trim(Str(ContentNo)), "Expiry", Str(#12/31/2099#)) + " ##" + vbCrLf + vbCrLf
+                    txtContent.Text = "## This task was scheduled to occur every " + FreqStr + " expired on " + GetSetting("Archived", Trim(Str(ContentNo)), "Expiry", Str(#12/31/2099#)) + " ##" + vbNewLine + vbNewLine
                     HeaderLen = Len(txtContent.Text)
                     txtContent.Text = txtContent.Text + GetSetting("Archived", Trim(Str(ContentNo)), "Content", "")
                 End If
@@ -1700,6 +1655,7 @@ Private Sub LoadContent()
         Case 2
             txtContent.Text = GetSetting("Pending", Trim(Str(ContentNo)), "Content", "")
     End Select
+    txtContent.Text = Replace(txtContent.Text, "</R>", vbNewLine)
 End Sub
 
 Private Sub UpcomingFrame_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -1785,10 +1741,141 @@ Private Sub Edit_Work()
         Case 2
             WINtask.txtContent.Text = GetSetting("Pending", Trim(Str(WorkSelected)), "Content", "")
     End Select
+    WINtask.txtContent.Text = Replace(WINtask.txtContent.Text, "</R>", vbNewLine)
     WINtask.Show vbModal
     If WINtask.Tag = "Editted" Then
         Delete_Work TabSelected, WorkSelected
-        AddTask WINtask.txtSubject.Text, WINtask.txtContent.Text, WINtask.txtDeadline.Text, WINtask.cmdOK.Tag, WINtask.txtExpiry.Text
+        AddTask WINtask.txtSubject.Text, WINtask.txtContent.Text, WINtask.txtDeadline.Text, WINtask.cmdOK.Tag, WINtask.txtExpiry.Text, WINtask.txtDeadline.Text
     End If
     Unload WINtask
+End Sub
+
+Public Sub RepairAll()
+    On Error Resume Next
+    Dim n1 As Integer
+    Dim Tsubject As String
+    Dim Tcontent As String
+    Dim Ttime As String
+    Dim Tfreq As String
+    Dim ToTime As String
+    Dim Texpiry As String
+    Dim Tacknowledged As String
+    
+    'Repairing Archived tasks
+    
+    For n1 = 0 To Val(GetSetting("Archived", "Total", "Number", "0")) - 1
+        MoveTask 1, n1, n1
+    Next
+    
+    'Repairing upcoming tasks
+
+    For n1 = 0 To Val(GetSetting("Upcoming", "Total", "Number", "0")) - 1
+        MoveTask 0, n1, n1
+    Next
+    
+    'Repairing pending tasks
+    
+    For n1 = 0 To Val(GetSetting("Pending", "Total", "Number", "0")) - 1
+        MoveTask 2, n1, n1
+    Next
+End Sub
+
+Public Sub MoveTask(SrcTab As Byte, SrcTask As Integer, DestTask As Integer, Optional DestTab As Byte = 3)
+    On Error Resume Next
+    If DestTab = 3 Then
+        DestTab = SrcTab
+    End If
+    
+    Dim SrcTabStr As String
+    Dim DestTabStr As String
+    Dim SrcTaskStr As String
+    Dim DestTaskStr As String
+    SrcTabStr = TabStr(SrcTab)
+    DestTabStr = TabStr(DestTab)
+    SrcTaskStr = Trim(Str(SrcTask))
+    DestTaskStr = Trim(Str(DestTask))
+    
+    Dim Tsubject As String
+    Dim Tcontent As String
+    Dim Ttime As String
+    Dim Tfreq As String
+    Dim ToTime As String
+    Dim Texpiry As String
+    Dim Tacknowledged As String
+    
+    Tsubject = GetSetting(SrcTabStr, SrcTaskStr, "Subject", "")
+    Tcontent = GetSetting(SrcTabStr, SrcTaskStr, "Content", "")
+    Ttime = GetSetting(SrcTabStr, SrcTaskStr, "Time", "")
+    Tfreq = GetSetting(SrcTabStr, SrcTaskStr, "Freq", "o")
+    ToTime = GetSetting(SrcTabStr, SrcTaskStr, "oTime", "")
+    Texpiry = GetSetting(SrcTabStr, SrcTaskStr, "Expiry", Str(#12/31/2099#))
+    Tacknowledged = GetSetting(SrcTabStr, SrcTaskStr, "Acknowledged", GetSetting(SrcTabStr, SrcTaskStr, "Clicked", "0"))
+    DeleteSetting SrcTabStr, SrcTaskStr
+    DeleteSetting DestTabStr, DestTaskStr
+    
+    SaveTask DestTab, DestTask, Tsubject, Tcontent, Ttime, Tfreq, ToTime, Texpiry, Tacknowledged
+End Sub
+
+Public Function TabStr(TabIndex As Byte) As String
+    On Error Resume Next
+    Select Case TabIndex
+        Case 0
+            TabStr = "Upcoming"
+        Case 1
+            TabStr = "Archived"
+        Case 2
+            TabStr = "Pending"
+    End Select
+End Function
+
+Public Sub SaveTask(TabNum As Byte, TaskNum As Integer, Optional Tsubject As String = "", Optional Tcontent As String = "", Optional Ttime As String = "", Optional Tfreq As String = "", Optional ToTime As String = "", Optional Texpiry As String = "", Optional Tacknowledged As String = "")
+    On Error Resume Next
+    Dim TabName As String
+    Dim TaskStr As String
+    TabName = TabStr(TabNum)
+    TaskStr = Trim(Str(TaskNum))
+    If Tsubject <> "" Then
+        SaveSetting TabName, TaskStr, "Subject", Tsubject
+    'End If
+        If Tcontent <> "" Then
+            Tcontent = Replace(Tcontent, vbNewLine, "</R>")
+            Tcontent = Replace(Tcontent, vbCr, "</R>")
+            Tcontent = Replace(Tcontent, vbLf, "</R>")
+            SaveSetting TabName, TaskStr, "Content", Tcontent
+        End If
+    End If
+    If TabNum = 2 Then
+        Exit Sub
+    End If
+    If Ttime <> "" Then
+        If IsDate(Ttime) Then
+            SaveSetting TabName, TaskStr, "Time", Ttime
+        End If
+    End If
+    If TabNum = 0 Then
+        If Tacknowledged <> "" Then
+            If Tacknowledged <> "0" Then
+                SaveSetting TabName, TaskStr, "Acknowledged", Tacknowledged
+            End If
+        End If
+    End If
+    If Tfreq <> "" Then
+        If Tfreq <> "o" Then
+            SaveSetting TabName, TaskStr, "Freq", Tfreq
+            SaveSetting TabName, TaskStr, "Expiry", Texpiry
+            If ToTime <> "" Then
+                SaveSetting TabName, TaskStr, "oTime", ToTime
+            End If
+        Else
+            Exit Sub
+        End If
+    End If
+    
+    'If Texpiry <> "" Then
+    '    If IsDate(Texpiry) Then
+    '        If DateValue(Texpiry) <> #12/31/2099# Then
+    '            SaveSetting TabName, TaskStr, "Expiry", Texpiry
+    '        End If
+    '    End If
+    'End If
 End Sub

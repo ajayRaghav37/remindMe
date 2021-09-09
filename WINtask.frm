@@ -10,6 +10,7 @@ Begin VB.Form WINtask
    ClientTop       =   3360
    ClientWidth     =   6885
    FillStyle       =   0  'Solid
+   ForeColor       =   &H001778A9&
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
@@ -44,7 +45,7 @@ Begin VB.Form WINtask
       MonthBackColor  =   2532833
       ShowToday       =   0   'False
       ShowWeekNumbers =   -1  'True
-      StartOfWeek     =   68485122
+      StartOfWeek     =   39780354
       TitleBackColor  =   1538217
       TitleForeColor  =   0
       TrailingForeColor=   1538217
@@ -117,7 +118,7 @@ Begin VB.Form WINtask
       MonthBackColor  =   2532833
       ShowToday       =   0   'False
       ShowWeekNumbers =   -1  'True
-      StartOfWeek     =   68485122
+      StartOfWeek     =   39780354
       TitleBackColor  =   1538217
       TitleForeColor  =   0
       TrailingForeColor=   1538217
@@ -487,6 +488,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
+    WINtaskLoaded = True
     MyCalen.MinDate = Now
     ExpiryCalen.MinDate = Now
 End Sub
@@ -608,6 +610,14 @@ Private Sub cmdOK_MouseMove(Button As Integer, Shift As Integer, X As Single, Y 
     On Error Resume Next
     cmdOK.BackColor = cButton_Hover
     cmdCancel.BackColor = cButton_Normal
+End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    WINtaskLoaded = False
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    WINtaskLoaded = False
 End Sub
 
 Private Sub FreqD_Click()

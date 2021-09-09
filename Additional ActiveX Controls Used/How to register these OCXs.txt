@@ -1,0 +1,4 @@
+1. Copy these OCX files to System32
+2. Run cmd (Command Prompt) as administrator
+3. Type regsvr32 MSWINSCK.OCX and then press enter
+4. Type regsvr32 NetGrab.OCX and then press enter
