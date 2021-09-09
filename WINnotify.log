@@ -1,0 +1,25 @@
+Line 22: Class WMPLibCtl.WindowsMediaPlayer of control TonePlayer was not a loaded control class.
+Line 29: The property name URL in TonePlayer is invalid.
+Line 30: The property name rate in TonePlayer is invalid.
+Line 31: The property name balance in TonePlayer is invalid.
+Line 32: The property name currentPosition in TonePlayer is invalid.
+Line 33: The property name defaultFrame in TonePlayer is invalid.
+Line 34: The property name playCount in TonePlayer is invalid.
+Line 35: The property name autoStart in TonePlayer is invalid.
+Line 36: The property name currentMarker in TonePlayer is invalid.
+Line 37: The property name invokeURLs in TonePlayer is invalid.
+Line 38: The property name baseURL in TonePlayer is invalid.
+Line 39: The property name volume in TonePlayer is invalid.
+Line 40: The property name mute in TonePlayer is invalid.
+Line 41: The property name uiMode in TonePlayer is invalid.
+Line 42: The property name stretchToFit in TonePlayer is invalid.
+Line 43: The property name windowlessVideo in TonePlayer is invalid.
+Line 45: The property name enableContextMenu in TonePlayer is invalid.
+Line 46: The property name fullScreen in TonePlayer is invalid.
+Line 47: The property name SAMIStyle in TonePlayer is invalid.
+Line 48: The property name SAMILang in TonePlayer is invalid.
+Line 49: The property name SAMIFilename in TonePlayer is invalid.
+Line 50: The property name captioningID in TonePlayer is invalid.
+Line 51: The property name enableErrorDialogs in TonePlayer is invalid.
+Line 52: The property name _cx in TonePlayer is invalid.
+Line 53: The property name _cy in TonePlayer is invalid.
